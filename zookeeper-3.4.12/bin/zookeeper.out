@@ -36,3 +36,8 @@
 2025-01-28 09:16:42,703 [myid:] - INFO  [SyncThread:0:ZooKeeperServer@693] - Established session 0x100301d21920001 with negotiated timeout 30000 for client /127.0.0.1:56482
 2025-01-28 09:17:01,661 [myid:] - INFO  [SessionTracker:ZooKeeperServer@354] - Expiring session 0x100301d21920000, timeout of 30000ms exceeded
 2025-01-28 09:17:01,664 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@487] - Processed session termination for sessionid: 0x100301d21920000
+2025-01-28 09:38:39,259 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxnFactory@215] - Accepted socket connection from /127.0.0.1:56825
+2025-01-28 09:38:39,261 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:ServerCnxn@324] - The list of known four letter word commands is : [{1936881266=srvr, 1937006964=stat, 2003003491=wchc, 1685417328=dump, 1668445044=crst, 1936880500=srst, 1701738089=envi, 1668247142=conf, 2003003507=wchs, 2003003504=wchp, 1668247155=cons, 1835955314=mntr, 1769173615=isro, 1920298859=ruok, 1735683435=gtmk, 1937010027=stmk}]
+2025-01-28 09:38:39,261 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:ServerCnxn@325] - The list of enabled four letter word commands is : [[wchs, stat, stmk, conf, ruok, mntr, srvr, envi, srst, isro, dump, gtmk, crst, cons]]
+2025-01-28 09:38:39,261 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxn@892] - Processing srvr command from /127.0.0.1:56825
+2025-01-28 09:38:39,263 [myid:] - INFO  [Thread-0:NIOServerCnxn@1040] - Closed socket connection for client /127.0.0.1:56825 (no session established for client)

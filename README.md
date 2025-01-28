@@ -3,11 +3,11 @@ Speaks about distributed systems. Zookeeper etc...
 
 ## 1. Basics of Zookeeper (Cluster Coordination Service and Distributed Algos)
 
-- Start zookeeper server
-	`./zkServer.sh start`
 
-- Start zookeeper client
-	`./zkCli.sh`
+`./zkServer.sh start` starts zookeeper server
+`./zkServer.sh stop` stops the server
+
+`./zkCli.sh` starts zookeeper client
 
 `help`
 
