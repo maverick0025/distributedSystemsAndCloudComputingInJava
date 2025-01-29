@@ -1,1 +1,3 @@
 zookeeper-3.4.12/logs/
+.DS_Store
+.README.md.swp
