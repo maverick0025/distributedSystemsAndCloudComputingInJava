@@ -23,4 +23,4 @@ Speaks about distributed systems. Zookeeper etc...
 
 `rmr /parent` removes both parent and all childs it had 
 
-
+`java -jar target/leader.election-1.0-SNAPSHOT-jar-with-dependencies.jar`

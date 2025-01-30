@@ -44,6 +44,7 @@
                 </configuration>
             </plugin>
 
+<!--            for packaging-->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
