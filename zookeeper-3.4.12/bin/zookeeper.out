@@ -63,3 +63,27 @@
 2025-01-31 06:45:19,365 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@487] - Processed session termination for sessionid: 0x10008a442a20002
 2025-01-31 06:45:21,363 [myid:] - INFO  [SessionTracker:ZooKeeperServer@354] - Expiring session 0x10008a442a20003, timeout of 4000ms exceeded
 2025-01-31 06:45:21,364 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@487] - Processed session termination for sessionid: 0x10008a442a20003
+2025-01-31 12:14:37,803 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxnFactory@215] - Accepted socket connection from /127.0.0.1:62513
+2025-01-31 12:14:37,810 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:ZooKeeperServer@948] - Client attempting to establish new session at /127.0.0.1:62513
+2025-01-31 12:14:37,818 [myid:] - INFO  [SyncThread:0:ZooKeeperServer@693] - Established session 0x10008a442a20006 with negotiated timeout 4000 for client /127.0.0.1:62513
+2025-01-31 12:14:37,826 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@653] - Got user-level KeeperException when processing sessionid:0x10008a442a20006 type:create cxid:0x1 zxid:0x3d txntype:-1 reqpath:n/a Error Path:/workers Error:KeeperErrorCode = NoNode for /workers
+2025-01-31 12:14:38,207 [myid:] - WARN  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxn@376] - Unable to read additional data from client sessionid 0x10008a442a20006, likely client has closed socket
+2025-01-31 12:14:38,208 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxn@1040] - Closed socket connection for client /127.0.0.1:62513 which had sessionid 0x10008a442a20006
+2025-01-31 12:14:41,991 [myid:] - INFO  [SessionTracker:ZooKeeperServer@354] - Expiring session 0x10008a442a20006, timeout of 4000ms exceeded
+2025-01-31 12:14:41,992 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@487] - Processed session termination for sessionid: 0x10008a442a20006
+2025-01-31 12:15:27,443 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxnFactory@215] - Accepted socket connection from /[0:0:0:0:0:0:0:1]:62524
+2025-01-31 12:15:27,444 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:ZooKeeperServer@948] - Client attempting to establish new session at /[0:0:0:0:0:0:0:1]:62524
+2025-01-31 12:15:27,447 [myid:] - INFO  [SyncThread:0:ZooKeeperServer@693] - Established session 0x10008a442a20007 with negotiated timeout 4000 for client /[0:0:0:0:0:0:0:1]:62524
+2025-01-31 12:15:27,448 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@653] - Got user-level KeeperException when processing sessionid:0x10008a442a20007 type:create cxid:0x1 zxid:0x40 txntype:-1 reqpath:n/a Error Path:/workers Error:KeeperErrorCode = NoNode for /workers
+2025-01-31 12:15:27,822 [myid:] - WARN  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxn@376] - Unable to read additional data from client sessionid 0x10008a442a20007, likely client has closed socket
+2025-01-31 12:15:27,822 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxn@1040] - Closed socket connection for client /[0:0:0:0:0:0:0:1]:62524 which had sessionid 0x10008a442a20007
+2025-01-31 12:15:31,990 [myid:] - INFO  [SessionTracker:ZooKeeperServer@354] - Expiring session 0x10008a442a20007, timeout of 4000ms exceeded
+2025-01-31 12:15:31,990 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@487] - Processed session termination for sessionid: 0x10008a442a20007
+2025-01-31 12:27:34,674 [myid:] - WARN  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxn@376] - Unable to read additional data from client sessionid 0x10008a442a20005, likely client has closed socket
+2025-01-31 12:27:34,678 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxn@1040] - Closed socket connection for client /127.0.0.1:60143 which had sessionid 0x10008a442a20005
+2025-01-31 12:27:39,981 [myid:] - INFO  [SessionTracker:ZooKeeperServer@354] - Expiring session 0x10008a442a20005, timeout of 4000ms exceeded
+2025-01-31 12:27:39,983 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@487] - Processed session termination for sessionid: 0x10008a442a20005
+2025-01-31 12:27:43,671 [myid:] - WARN  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxn@376] - Unable to read additional data from client sessionid 0x10008a442a20004, likely client has closed socket
+2025-01-31 12:27:43,671 [myid:] - INFO  [NIOServerCxn.Factory:0.0.0.0/0.0.0.0:2181:NIOServerCnxn@1040] - Closed socket connection for client /[0:0:0:0:0:0:0:1]:60128 which had sessionid 0x10008a442a20004
+2025-01-31 12:27:47,981 [myid:] - INFO  [SessionTracker:ZooKeeperServer@354] - Expiring session 0x10008a442a20004, timeout of 4000ms exceeded
+2025-01-31 12:27:47,982 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@487] - Processed session termination for sessionid: 0x10008a442a20004
