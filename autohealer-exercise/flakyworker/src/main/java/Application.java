@@ -28,6 +28,7 @@ import java.io.IOException;
 
 public class Application {
     public static void main(String[] args) throws IOException, KeeperException, InterruptedException {
+        System.out.println("Launched flaky worker!");
         Worker worker = new Worker();
         worker.connectToZookeeper();
         worker.work();

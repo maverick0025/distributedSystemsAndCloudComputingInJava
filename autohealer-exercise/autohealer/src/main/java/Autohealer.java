@@ -26,6 +26,7 @@ import org.apache.zookeeper.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class Autohealer implements Watcher {
 
@@ -48,6 +49,7 @@ public class Autohealer implements Watcher {
     }
 
     public void startWatchingWorkers() throws KeeperException, InterruptedException {
+        Thread.sleep(4000);
         if (zooKeeper.exists(AUTOHEALER_ZNODES_PATH, false) == null) {
             zooKeeper.create(AUTOHEALER_ZNODES_PATH, new byte[]{}, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
@@ -81,22 +83,25 @@ public class Autohealer implements Watcher {
                     }
                 }
                 break;
-            /**
-             * Add states code here to respond to the relevant events
-             */
+            case NodeChildrenChanged:
+                launchWorkersIfNecessary();
         }
     }
 
     private void launchWorkersIfNecessary() {
-        /**
-         * Implement this method to watch and launch new workers if necessary
-         */
+        try {
+            List<String> children = zooKeeper.getChildren(AUTOHEALER_ZNODES_PATH, this);
+            System.out.println(String.format("Currently there are %d workers", children.size()));
+
+            if (children.size() < numberOfWorkers) {
+                startNewWorker();
+            }
+        } catch (InterruptedException | KeeperException | IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
-    /**
-     * Helper method to start a single worker
-     * @throws IOException
-     */
     private void startNewWorker() throws IOException {
         File file = new File(pathToProgram);
         String command = "java -jar " + file.getCanonicalPath();

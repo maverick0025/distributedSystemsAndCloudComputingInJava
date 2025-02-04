@@ -50,7 +50,6 @@ public class Worker {
 
     public void work() throws KeeperException, InterruptedException {
         addChildZnode();
-
         while (true) {
             System.out.println("Working...");
             LockSupport.parkNanos(1000);
@@ -66,5 +65,6 @@ public class Worker {
                 new byte[]{},
                 ZooDefs.Ids.OPEN_ACL_UNSAFE,
                 CreateMode.EPHEMERAL_SEQUENTIAL);
+        System.out.println("Added a child znode");
     }
 }
