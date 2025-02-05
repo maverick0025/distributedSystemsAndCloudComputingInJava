@@ -27,7 +27,7 @@ public class Application implements Watcher {
         //Reason wny this is done is because of constructor Injection.
         //I can create a few new classes that implements OnElectionCall back and override the methods it provide with a different implementation
         //so for us to be flexible with that we do this constructor injection of interface here.
-        //check this out if future you has questions still: https://claude.ai/chat/1b62e70f-1a71-44ec-804e-35b3a5ece657
+        //check this out if future you have questions still: https://claude.ai/chat/1b62e70f-1a71-44ec-804e-35b3a5ece657
         leaderElection.volunteerForLeadership();
         leaderElection.reelectLeader();
 
