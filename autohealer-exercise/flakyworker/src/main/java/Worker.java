@@ -22,16 +22,13 @@
  *  SOFTWARE.
  */
 
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.locks.LockSupport;
 
-public class Worker {
+public class Worker implements Watcher {
     private static final String ZOOKEEPER_ADDRESS = "localhost:2181";
     private static final int SESSION_TIMEOUT = 3000;
 
@@ -44,11 +41,10 @@ public class Worker {
     private ZooKeeper zooKeeper;
 
     public void connectToZookeeper() throws IOException {
-        this.zooKeeper = new ZooKeeper(ZOOKEEPER_ADDRESS, SESSION_TIMEOUT, event -> {
-        });
+        this.zooKeeper = new ZooKeeper(ZOOKEEPER_ADDRESS, SESSION_TIMEOUT, this);
     }
 
-    public void work() throws KeeperException, InterruptedException {
+    public void work() {
         addChildZnode();
         while (true) {
             System.out.println("Working...");
@@ -60,11 +56,39 @@ public class Worker {
         }
     }
 
-    private void addChildZnode() throws KeeperException, InterruptedException {
-        zooKeeper.create(AUTOHEALER_ZNODES_PATH + "/worker_",
-                new byte[]{},
-                ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                CreateMode.EPHEMERAL_SEQUENTIAL);
-        System.out.println("Added a child znode");
+    private void addChildZnode() {
+        try{
+            zooKeeper.create(AUTOHEALER_ZNODES_PATH + "/worker_",
+                    new byte[]{},
+                    ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.EPHEMERAL_SEQUENTIAL);
+        } catch(KeeperException | InterruptedException e){
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+//        System.out.println("Added a child znode");
+    }
+
+    public void run() throws InterruptedException {
+        synchronized (zooKeeper) {
+            zooKeeper.wait();
+        }
+    }
+
+    @Override
+    public void process(WatchedEvent event) {
+        switch (event.getType()) {
+            case None:
+                if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
+                    System.out.println("Successfully connected to Zookeeper");
+                    work();
+                } else {
+                    synchronized (zooKeeper) {
+                        System.out.println("Disconnected from Zookeeper event");
+                        zooKeeper.notifyAll();
+                    }
+                }
+                break;
+        }
     }
 }

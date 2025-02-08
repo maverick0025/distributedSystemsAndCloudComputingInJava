@@ -31,6 +31,7 @@ public class Application {
         System.out.println("Launched flaky worker!");
         Worker worker = new Worker();
         worker.connectToZookeeper();
-        worker.work();
+        worker.run();
+//        worker.work();
     }
 }

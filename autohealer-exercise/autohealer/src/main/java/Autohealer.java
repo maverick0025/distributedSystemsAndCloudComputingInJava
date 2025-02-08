@@ -49,7 +49,7 @@ public class Autohealer implements Watcher {
     }
 
     public void startWatchingWorkers() throws KeeperException, InterruptedException {
-        Thread.sleep(4000);
+//        Thread.sleep(4000);
         if (zooKeeper.exists(AUTOHEALER_ZNODES_PATH, false) == null) {
             zooKeeper.create(AUTOHEALER_ZNODES_PATH, new byte[]{}, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
@@ -103,9 +103,20 @@ public class Autohealer implements Watcher {
     }
 
     private void startNewWorker() throws IOException {
-        File file = new File(pathToProgram);
+        /*File file = new File(pathToProgram);
         String command = "java -jar " + file.getCanonicalPath();
         System.out.println(String.format("Launching worker instance : %s ", command));
         Runtime.getRuntime().exec(command, null, file.getParentFile());
+    */
+        File flakyWorkerJarFile = new File(pathToProgram);
+        ProcessBuilder processBuilder =
+                new ProcessBuilder("java","-jar",flakyWorkerJarFile.getCanonicalPath());
+
+        File log = new File("log.txt");
+        processBuilder.redirectErrorStream(true);
+        processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(log));
+        System.out.println("Launching new worker instance");
+        processBuilder.start();
+
     }
 }
