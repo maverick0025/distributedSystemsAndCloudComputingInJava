@@ -34,7 +34,7 @@ public class Application {
         String task1 = "10,200";
         String task2 = "123456789,100000000000000,700000002342343";
 
-        List<String> results = aggregator.sendTasksToWorkers(Arrays.asList(WORKER_ADDRESS_2, WORKER_ADDRESS_2),
+        List<String> results = aggregator.sendTasksToWorkers(Arrays.asList(WORKER_ADDRESS_1, WORKER_ADDRESS_2),
                 Arrays.asList(task1, task2));
 
         for (String result : results) {
