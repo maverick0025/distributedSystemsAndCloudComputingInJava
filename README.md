@@ -11,7 +11,7 @@ Speaks about distributed systems. Zookeeper etc...
  http server and client functionality
 ### BasicBookSearchAlgo 
  searching the query string and ranking each book based on the relevance to the searched query strings
-
+### distributed-search-worker-node: LeaderElection, Service Registry, HTTP, Data Serialization, TF-IDF
 
 
 
