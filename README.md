@@ -24,10 +24,11 @@ Speaks about distributed systems. Zookeeper etc...
  - User facing frontend server interacts with the coordinator(leader) and then leader then distributes the workload to all available workers.
  
  - ### Run
-	* start zookeeper server
-	* create /coordinators_service_registry "For the leader"
-	* create /workers_service_registry "For worker nodes"
-	* create /election "For leader election and relection"
+	* start zookeeper server `./zkServer.sh start`
+	* open zookeeper client `./zkCli.sh`
+		- create /coordinators_service_registry "For the leader"
+		- create /workers_service_registry "For worker nodes"
+		- create /election "For leader election and relection"
 	* run frontend jar file `java -jar target/front.end-1.0-SNAPSHOT-jar-with-dependencies.jar` and server be active on  localhost:9090
 	* run backend jars (as many workers as needed + 1 leader (auto elect)) `java -jar target/distributed.search-1.0-SNAPSHOT-jar-with-dependencies.jar 808x`. Replace x with the port for each node to use.
  
