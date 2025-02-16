@@ -15,7 +15,7 @@ Speaks about distributed systems. Zookeeper etc...
  LeaderElection, Service Registry, HTTP, Data Serialization, TF-IDF
                                     - Any instance of this application dynamically in run time can assume the role of the cluster coordinator or the search worker. It performs it's role in the distributed algorithm and communicate with the corresponding nodes in the distributed system using HTTP and data serialization.
 
-##Distributed Document Search frontend, backend application:
+## Distributed Document Search frontend, backend application:
  - Take an algorithm like TF-IDF(a simple document search algorithm) and transform it into a distributed system that performs the algorithm in parallel.
  - This Distributed System can operate on a large data set that potentially can exceed teh capacity of a single computer.
  - using Zookeeper, I made the cluster dynamic, fault-tolerant and highly scalable. 
