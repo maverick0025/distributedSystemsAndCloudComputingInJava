@@ -33,11 +33,12 @@
 	* run backend jars (as many workers as needed + 1 leader (auto elect)) `java -jar target/distributed.search-1.0-SNAPSHOT-jar-with-dependencies.jar 808x`. Replace x with the port for each node to use.
  
 ## HA Proxy
-	- In haproxy/dockerfile set the path of haproxycorrectly if not set properly.
-	- From the docker-compose.yml directory, do `docker-compose up --build` to start the containers.
-	- check `localhost`, `localhost:9001`, `localhost:9002`, `localhost:9003`, ``localhost:83`- for stats
-	- Reload `localhost` to check if load balancing logic is working.	
-	- To stop the containers, do `ctrl+c` and then `docker compose down`
+
+- In haproxy/dockerfile set the path of haproxycorrectly if not set properly.
+- From the docker-compose.yml directory, do `docker-compose up --build` to start the containers.
+- check `localhost`, `localhost:9001`, `localhost:9002`, `localhost:9003`, ``localhost:83`- for stats
+- Reload `localhost` to check if load balancing logic is working.	
+- To stop the containers, do `ctrl+c` and then `docker compose down`
 	
 
 
