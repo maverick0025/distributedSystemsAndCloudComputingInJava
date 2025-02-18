@@ -1,0 +1,7 @@
+FROM haproxy:1.7
+# COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+COPY haproxy.cfg ./haproxy.cfg
+# COPY haproxy.cfg /Users/ashok/Documents/Else/Projects_leer/UdemyDistributedSystemsAndCloudComputing/distributedSystemsAndCloudComputingInJava/haproxy-practice/haproxy/haproxy.cfg
+# ENTRYPOINT ["haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
+# ENTRYPOINT ["haproxy", "-f", "/Users/ashok/Documents/Else/Projects_leer/UdemyDistributedSystemsAndCloudComputing/distributedSystemsAndCloudComputingInJava/haproxy-practice/haproxy/haproxy.cfg"]
+ENTRYPOINT ["haproxy", "-f", "./haproxy.cfg"]
