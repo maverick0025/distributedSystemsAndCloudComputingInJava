@@ -1,12 +1,16 @@
 # Distributed Systems on-hands
 
-### zookeeper-api-introduction
+## zookeeper-api-introduction
  Connecting to zookeeper, leader election, leader relection strategy, service registry
-### autohealer-exercie 
+
+## autohealer-exercie 
  Set of two java applications. One is responsible for leader election and handling what happens when a node goes rouge/dies. Other application is flaky worker which essentially is brings in the rougness to the workers by killing itself(multiple flaky workers on their own) at a random time. Check the readme in it to get more insight 
 
-### httpserver, httpclient 
- http server and client functionality
+## httpServerAndClient
+- httpServer
+ * basic http server setup, two endpoints, test mode, debug mode.
+- http client
+ * basic http client functionality
 
 ### BasicBookSearchAlgo 
  searching the query string and ranking each book based on the relevance to the searched query strings
