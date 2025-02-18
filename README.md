@@ -8,9 +8,9 @@
 
 ## httpServerAndClient
 - httpServer
- * basic http server setup, two endpoints, test mode, debug mode.
+	* basic http server setup, two endpoints, test mode, debug mode.
 - http client
- * basic http client functionality
+	* basic http client functionality
 
 ### BasicBookSearchAlgo 
  searching the query string and ranking each book based on the relevance to the searched query strings
