@@ -44,7 +44,10 @@
 - Reload `localhost` to check if load balancing logic is working.	
 - To stop the containers, do `ctrl+c` and then `docker compose down`
 	
+## kafka_cmdline
 
+- Run Kafka broker servers, publishers, consumers
+- check README.md in /kafka_cmdline/
 
 ## ProtoBuf file installation and compilation process
 
