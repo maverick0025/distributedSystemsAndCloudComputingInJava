@@ -49,6 +49,9 @@
 - Run Kafka broker servers, publishers, consumers
 - check README.md in /kafka_cmdline/
 
+# kafka_pc
+- check readme in it.
+
 ## ProtoBuf file installation and compilation process
 
  - Install the protoc x86-64 version from https://github.com/protocolbuffers/protobuf/releases/tag/v29.3 to some directory probably it's best to place it somewhere universally.

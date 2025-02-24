@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 public class Application {
     private static final String TOPIC = "events";
     private static final String BOOTSTRAP_SERVERS = "localhost:9092,localhost:9093,localhost:9094";
+    //giving all the server names
 
     public static void main(String[] args) {
         Producer<Long, String> kafkaProducer = createKafkaProducer(BOOTSTRAP_SERVERS);
@@ -50,7 +51,7 @@ public class Application {
     }
 
     public static void produceMessages(int numberOfMessages, Producer<Long, String> kafkaProducer) throws ExecutionException, InterruptedException {
-        int partition = 1;
+//        int partition = 1;
 
         for (int i = 0; i < numberOfMessages; i++) {
             long key = i;
@@ -58,7 +59,15 @@ public class Application {
 
             long timeStamp = System.currentTimeMillis();
 
-            ProducerRecord<Long, String> record = new ProducerRecord<>(TOPIC, partition, timeStamp, key, value);
+//            ProducerRecord<Long, String> record = new ProducerRecord<>(TOPIC, partition, timeStamp, key, value);
+            //assigning partition explicitly.
+
+            ProducerRecord<Long, String> record = new ProducerRecord<>(TOPIC, key, value);
+            //since partition is not mentioned, a hash function will be applied on to the key to determine which partition this event would go to
+            //producer should be less coupled to the topic's partition. so this is the better approach than specifying partitions
+
+//            ProducerRecord<Long, String> record = new ProducerRecord<>(TOPIC, value);
+            //but, there might be cases when we just have data and no keys, then the kafka producer will use RoundRobin method to distribute such events in partitions.
 
             RecordMetadata recordMetadata = kafkaProducer.send(record).get();
 
@@ -75,7 +84,7 @@ public class Application {
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
-        return new KafkaProducer<>(properties);
+        return new KafkaProducer<Long, String>(properties);
     }
 
 }
