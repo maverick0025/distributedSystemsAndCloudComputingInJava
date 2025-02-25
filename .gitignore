@@ -6,3 +6,6 @@ zookeeper-3.4.12/logs/
 DS_Store
 /kafka_cmdline/kafka_2.13-3.9.0.tgz
 /kafka_cmdline/kafka_2.13-3.9.0/
+kafka-prod-con/kafka-consumer/target/
+kafka-prod-con/kafka-consumer/target
+*.jar

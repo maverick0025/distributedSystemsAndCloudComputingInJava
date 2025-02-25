@@ -54,8 +54,8 @@ public class Application {
         kafkaConsumer.subscribe(Collections.singletonList(topic));
 
         while (true) {
-            ConsumerRecords<Long, String> consumerRecords = kafkaConsumer.poll(Duration.ofSeconds(1));
-
+            ConsumerRecords<Long, String> consumerRecords = kafkaConsumer.poll(Duration.ofSeconds(1)); //this consumer will wait for 1 second and try to consume messages. if there are no messages , it will skip polling for now.
+            //for network efficiency, Kafka would stream records batchwise
             if (consumerRecords.isEmpty()) {
                 // do something else
             }
@@ -67,17 +67,18 @@ public class Application {
 
             // do something with the records
 
-            kafkaConsumer.commitAsync();
+            kafkaConsumer.commitAsync(); //commiting manually.
+            //in the config below, if auto ccmmit config is made true, as soon as a message if read by a consumer, it will be commited by Kafka
+            //by disabling the auto commit config, I'm commiting it manually using commitAsync(). In this case, even if a message is read by a consumer, it will not be commited and any other consumer can read it as soon as it is up and running.
         }
     }
 
     public static Consumer<Long, String> createKafkaConsumer(String bootstrapServers, String consumerGroup) {
         Properties properties = new Properties();
-
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroup);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroup); //to which consumer group does this consumer belong to
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
         return new KafkaConsumer<>(properties);
