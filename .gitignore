@@ -9,3 +9,8 @@ DS_Store
 kafka-prod-con/kafka-consumer/target/
 kafka-prod-con/kafka-consumer/target
 *.jar
+**/*.jar
+**/*.tgz
+**/kafka_2.12-2.2.0/
+**/kafka_2.13-3.9.0/
+**/kafka_latest_2.13-3.9.0/
