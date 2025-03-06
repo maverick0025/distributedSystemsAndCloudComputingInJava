@@ -14,3 +14,6 @@ kafka-prod-con/kafka-consumer/target
 **/kafka_2.12-2.2.0/
 **/kafka_2.13-3.9.0/
 **/kafka_latest_2.13-3.9.0/
+*/.idea/workspace.xml
+**/.idea/workspace.xml
+**/.idea/
