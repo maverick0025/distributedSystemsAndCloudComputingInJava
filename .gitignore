@@ -17,3 +17,5 @@ kafka-prod-con/kafka-consumer/target
 */.idea/workspace.xml
 **/.idea/workspace.xml
 **/.idea/
+mongodb_terminal/*.zip
+**/**/.idea/
