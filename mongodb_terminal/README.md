@@ -96,15 +96,17 @@
 - Group the above created config servers together into a single replicated cluster
     - lets connect to one of them `mongosh --port 27020`.
         ```json
-        rs.initiate({
-        _id: "config-rs",
-        configsvr: true,
-        members: [
-            { _id: 0, host: "127.0.0.1:27020" },
-            { _id: 1, host: "127.0.0.1:27021" },
-            { _id: 2, host: "127.0.0.1:27022" }
-        ] 
-        })
+        rs.initiate(
+            {
+            _id: "config-rs",
+            configsvr: true,
+            members: [
+                { _id: 0, host: "127.0.0.1:27020" },
+                { _id: 1, host: "127.0.0.1:27021" },
+                { _id: 2, host: "127.0.0.1:27022" }
+                ] 
+            }
+        )
         ```
 - Launching actual MongoDB shards. we are going to run two standalone shards
     - create directories for shards
@@ -125,4 +127,116 @@
         - `use config` switch to config database
         -  Now, we'll experiment with the balancing feature. So, change the chunk size from original 128 MB to 1MB. It's not needed in production but here we do it because to see the result my putting in a few documents.
             - `db.settings.save( {_id:"chunksize", value: 1} )`
+
 - Video on Demand online streaming service Use case to practice above sharding.
+    - User can search movie by name or scroll the list of movies alphabetically.
+    - DB should have two collections. (movies, users)
+    - Task is to shard these collections in a scalable way it would allow our business to grow and keep our users happy.
+    - #### Movies Collection (Sharding using range strategy)
+        - Movies collection document has data like the following: 
+             ```json
+                {
+                    "name": "Pulp Fiction",
+                    "directors": [
+                        "Quentin Tarantino"
+                    ],
+                    "year": 1994,
+                    "cast": [
+                        "Amanda Plummer",
+                        "Samuel L. Jackson",
+                        "Tim Roth",
+                        "Bruce Willis",
+                        "John Travolta",
+                        "Uma Thurman"
+                    ],
+                    "rating": 10.0
+                }
+            ```          
+        -  `mongosh --port 27023`
+        - create a video db `use videodb`
+        - enable sharding `sh.enableSharding("videodb")` this allows us to shard collections within it.
+        - `db.movies.insertOne({ "name": "Pulp Fiction", "directors": [ "Quentin Tarantino" ], "year": 1994, "cast": [ "Amanda Plummer", "Samuel L. Jackson", "Tim Roth", "Bruce Willis", "John Travolta", "Uma Thurman"], "rating": 10.0})`
+        - `db.movies.insertOne({ "name": "Moana", "directors": [ "Ron Clements", "john Musker", "Don Hall", "Chris Williams"], "year": 2016, "cast": [ "Auli'i Dwayne Johnson", "Rachel House", "Temuera Morrison", "Jemaine Clement", "Nicole SCherzinger", "Alan Tudyk", "Oscar Kightley", "Troy Polamalu", "Puanani Cravalho", "Louise Bush" ], "rating": 9.9})`
+        - At this moment, the collection has two documents but this collection hasn't yet been sharded. User query contains movie's name or query contains an alphabetic range of moie names.
+        - Shard movies collection using movie's name
+            - Sharding key will be present in the router and our mongos souter will know to which shard to direct the query rather than to broadcast it to all shards. ex: `db.movies.find({name:"Pulp Fiction"})`
+        - Shard the movies collection based on range based strategy
+            - If a query asks to fetch movies that start with the letter P, they will much more likely to be on the same shard which will make our query very fast. ex: `db.movies.find({name:"{$regex:^P}"})`
+        - Create an index on the column "name" since this is a prerequisite to shard the collection on this key. Index is a database structure that pre-computes some data about a particular filed in a collection ahead of time. Typically, it pre sorts or pre hashes the documents based on the given field to make queries involving this field more efficient.
+            - `db.movies.createIndex({ name: 1})` this index pre-sorts our names in ascending order.
+        - Now once we have the index the field we want to shard on , we need to run the shard collection command with the full collection name in the field we want to shard on.
+            - `sh.shardCollection("videodb.movies", {name : 1})` . here, 1 indicates that we are sharding using range-based strategy. Since we already pre-sorted them alphabetically, now with sharding, they will be broken into chunks but the names order stays the same.
+        - `sh.status()` to get more information of how our present collection has sharded. Check the shards section. There will be 2 active shards in our cluster at this point. And video db information located at the bottom. There it can be seen that the at present our entire collection is currently located in shard 1 and contains only chunk since we have only two documents (minimum name value -> maximum name value).
+        - Now, lets add alot more documents into our collection.
+            - go to *insert-many-movies* java application.
+            - It simply connects to the MongoDB cluster using mongos.
+            - Once the connection is successfull, we generate 10,000 movies and place all of them in our movies collection.
+            - Run the application.
+        - Now, we can see 10,000 new documents in our video db collection and a full rebalancing of our chunks among the previous two shards created.
+        - `sh.status()` to look at our new chunks distribution. And previously, we set the maximum size for a chunk as 1MB, now that we have 10,000 entries, we definitely increased that threshold. So now we have 15 chunks of documents in our collection. We can also see, our balancer placed 7 of them in shard0000 and 8 in shard0001. We can also see the exact range of names in each chunk and these names are sorted in alphabetic order just like we expected.
+        - So now if we want to query all movies that start with letter 'F' , they will all be in the same shard0000 despite being spread in 3 chunks.
+
+
+    - #### Users Collection (Sharding using hashed stragegy)
+        - Users collection has document data like the following
+            ```json
+                {
+                    "user_name": "John Smith",
+                    "watched_movies": [
+                        "Aladdin",
+                        "Spider Man"
+                    ],
+                    "favorite_genres":[
+                        "cartoon",
+                        "action",
+                        "horror"
+                    ],
+                    "subscription_month":8
+                }
+            ```
+        - User collection observation 
+            - Each time a user watches a movie, the document gets update.
+            - We expect to read and update existing documents frequently.
+            - We expect our collection to grow over time.
+            - Any read, update or addition involves only one user.
+        - why we need to use Hash based strategy for this
+            - No need for groups of users to be co-located
+            - We want even and random distribution of users across the shards for better reads and write across the whole cluster.
+        - User-names are not uniformly distributed.
+        - Document IDs (genrated by MongoDB) are random and uniformly distributed and are an excellent candidate for sharding key.
+        - We need to refer to the user by ID to make queries like read and write efficient.
+        - go back to mongos instance if not still connected -> `mongosh --port 27023`
+        - `use videodb` to connect to our database.
+        - add some users to our users collection
+            - `db.users.insertOne({ "user_name": "John Smith", "watched_movies": [ "Aladdin", "Spider Man" ], "favorite_genres":[ "cartoon", "action", "horror" ], "subscription_month":8 } )`
+            - `db.users.insertOne({ "user_name": "Edward Stark", "watched_movies": [ "Moana", "Pulp fiction", "The Notebook" ], "favorite_genres":[ "romance", "action", "comedy" ], "subscription_month":8 } )`
+        - `db.users.find().pretty()` we now have two users with two randomly generted ids of type '_id' by mongoDB. Each object _id contains a 12Byte value shown to us in a hexadecimal format.
+        - Now, lets shard the users' collection using the hash sharding strategy
+            - Create index like before but this time, index will prehashes the values of our userids `db.users.createIndex( { _id:"hashed" } )`
+            - Shard collection `sh.shardCollection("videodb.users", { _id: "hashed" } )`
+        -  When we do `sh.status(true)`, we can see that currently we only have once chunk of users containing all our data. We have only two documents in our collection right now.
+        - Now, open the inser-many-users java application
+            - It simply connects to the MongoDB cluster using mongos.
+            - Once the connection is successfull, we generate 10,000 users and place all of them in our users collection.
+            - Run the application.
+        - Run `sh.status(true)` to see users chunks and their distribution across two shards shard0000, shard0001. 
+            - There are 20 chunks created
+            - At first, we can see 5 chunks are assigned to shard0001 and 15 to shard0002. In the background, the loadbalancer is still balancing both of them. Do this status check in a few seconds to see both the shards would have approximately 10 chunks each. But it is also highly possible that mongodb can do chunk split and the number of chunks will also be increased before getting assigned to a different shard. So, we might also have more than 10 chunks. 
+            - hash function is applied on user _id and we can see their hash ranges.
+
+        
+            
+    - #### Video Streaming - System Evolution
+        - ##### Movies 
+            1. As our service becomes more popular, we start getting more read queries for all the movies that means our load increases evenly on all the shards.
+                - So, we can increase the number of shards. This will decrease the load on each shard and keep our distributed system stable.
+            2. Our load increases but one or a few movies are way more popular than the rest and are getting disproportionately large number of queries.
+                - In this case, adding more shards will not solve the problem as we have a clear hotspot in our data set.
+                - So, instead of increasing shards, we can increase the size of our replication set and in addition, use the readpreference as "SecondaryPreferred".
+                - This way, we will spread the queries among all the nodes in teh shards replication sets as they all contain the same data for that particular movie.
+                - This approach will work well because our movies data is almost static and doesn't change very often (Eventual consistency). We don't need to guarantee strict consistency in this use case.
+        - ##### Users
+            1. When it comes to scaling our users collection, is actually a lot simpler.
+                - It the number of users keeps increasing and we are getting more logins from existing users and signups from new users, simply increase the number of shards.
+                - As our userIds are uniformly distributed, we are guaranteed to not have any hotspots in our distributed database (dDB).
+
