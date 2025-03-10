@@ -113,20 +113,41 @@
         - `mkdir -p /opt/homebrew/var/mongodb/shard-0`
         - `mkdir -p /opt/homebrew/var/mongodb/shard-1`
     - Run above shards. Run the mongod instance but with shard server parameter. Use 2 terminals
-        - `mongod --shardsvr --port 27017 --bind_id 127.0.0.1 --dbpath /opt/homebrew/var/mongodb/shard-0 --oplogSize 128`
-        - `mongod --shardsvr --port 27018 --bind_id 127.0.0.1 --dbpath /opt/homebrew/var/mongodb/shard-1 --oplogSize 128`
+        - `mongod --shardsvr --replSet shard-rs --port 27017 --bind_ip 127.0.0.1 --dbpath /opt/homebrew/var/mongodb/shard-0/ --oplogSize 128`
+        - `mongod --shardsvr --replSet shard-rs --port 27018 --bind_ip 127.0.0.1 --dbpath /opt/homebrew/var/mongodb/shard-1/ --oplogSize 128`
+        - connect to `mongosh --port 27017` and intiate replication set
+            ```json
+            rs.initiate(
+                {
+                _id: "shard-rs",
+                members: [
+                    { _id: 0, host: "127.0.0.1:27017" },
+                    { _id: 1, host: "127.0.0.1:27018" }
+                    ] 
+                }
+            )
+            ```
+        <!-- - `mongod --shardsvr --port 27017 --bind_ip 127.0.0.1 --dbpath /opt/homebrew/var/mongodb/shard-0 --oplogSize 128` -->
+        <!-- - `mongod --shardsvr --port 27018 --bind_ip 127.0.0.1 --dbpath /opt/homebrew/var/mongodb/shard-1 --oplogSize 128` -->
     - Now on a new terminal, we need our mongo s router to put everything together. Ask it to listen on port 27023
-        - `mongos --configdb config-rs/127.0.0.1:27020,127.0.0.1:27021,127.0.0.1:27022 --bind_id 127.0.0.1 --port 27023`
+        - `mongos --configdb config-rs/127.0.0.1:27020,127.0.0.1:27021,127.0.0.1:27022 --bind_ip 127.0.0.1 --port 27023`
     - Now, we have everything put together. Check the cluster architecture diagram below
         -  ![Mongodb whole cluster idea](IMG_0098.jpeg)
     - Now, need to tell mongos about these two shards
         - `mongosh --port 27023`
-        - add first shard `sh.addShard("127.0.0.1:27017)`
-        - add second shard `sh.addShard("127.0.0.1:27018)`
+
+        <!-- [direct: mongos] test> sh.addShard("127.0.0.1:27017") -->
+        <!-- MongoServerError[OperationFailed]: host is part of set shard-rs; use replica set url format <setname>/<server1>,<server2>, ... -->
+        <!-- - add first shard `sh.addShard("127.0.0.1:27017")` -->
+        <!-- - add second shard `sh.addShard("127.0.0.1:27018")` -->
+        - add both the shards `sh.addShard("shard-rs/127.0.0.1:27017,127.0.0.1:27018")`
         - `show dbs`
         - `use config` switch to config database
         -  Now, we'll experiment with the balancing feature. So, change the chunk size from original 128 MB to 1MB. It's not needed in production but here we do it because to see the result my putting in a few documents.
-            - `db.settings.save( {_id:"chunksize", value: 1} )`
+
+            <!-- - [direct: mongos] config> db.settings.save( {_id:"chunksize", value: 1} ) TypeError: db.settings.save is not a function -->
+            <!-- - `db.settings.save( {_id:"chunksize", value: 1} )` -->
+            - `db.settings.updateOne({_id:"chunksize"}, {$set: {_id: "chunksize", value: 1}}, {upsert: true})`
 
 - Video on Demand online streaming service Use case to practice above sharding.
     - User can search movie by name or scroll the list of movies alphabetically.
@@ -161,7 +182,8 @@
         - Shard movies collection using movie's name
             - Sharding key will be present in the router and our mongos souter will know to which shard to direct the query rather than to broadcast it to all shards. ex: `db.movies.find({name:"Pulp Fiction"})`
         - Shard the movies collection based on range based strategy
-            - If a query asks to fetch movies that start with the letter P, they will much more likely to be on the same shard which will make our query very fast. ex: `db.movies.find({name:"{$regex:^P}"})`
+            - If a query asks to fetch movies that start with the letter P, they will much more likely to be on the same shard which will make our query very fast. ex: `db.movies.find({name:{ $regex: "^P" }})` 
+            <!-- - Error in video it said `db.movies.find({name:"{$regex:^P}"})` -->
         - Create an index on the column "name" since this is a prerequisite to shard the collection on this key. Index is a database structure that pre-computes some data about a particular filed in a collection ahead of time. Typically, it pre sorts or pre hashes the documents based on the given field to make queries involving this field more efficient.
             - `db.movies.createIndex({ name: 1})` this index pre-sorts our names in ascending order.
         - Now once we have the index the field we want to shard on , we need to run the shard collection command with the full collection name in the field we want to shard on.
@@ -172,6 +194,7 @@
             - It simply connects to the MongoDB cluster using mongos.
             - Once the connection is successfull, we generate 10,000 movies and place all of them in our movies collection.
             - Run the application.
+            - need to add java data bind xml dependency and also bump the mongodb driver version to 3.9.0.
         - Now, we can see 10,000 new documents in our video db collection and a full rebalancing of our chunks among the previous two shards created.
         - `sh.status()` to look at our new chunks distribution. And previously, we set the maximum size for a chunk as 1MB, now that we have 10,000 entries, we definitely increased that threshold. So now we have 15 chunks of documents in our collection. We can also see, our balancer placed 7 of them in shard0000 and 8 in shard0001. We can also see the exact range of names in each chunk and these names are sorted in alphabetic order just like we expected.
         - So now if we want to query all movies that start with letter 'F' , they will all be in the same shard0000 despite being spread in 3 chunks.

@@ -45,6 +45,7 @@ public class MoviesGenerator {
 
     public static void main(String[] args) {
         MongoDatabase onlineSchoolDb = connectToMongoDB(MONGO_DB_URL, DB_NAME);
+        System.out.println(onlineSchoolDb);
         generateMovies(10000, onlineSchoolDb, COLLECTION_NAME);
     }
 
