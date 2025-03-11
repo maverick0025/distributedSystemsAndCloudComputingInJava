@@ -58,3 +58,49 @@
 - After unpacking it, we can see protoc compiler binary in bin directory and we have to compile it to the location where we want our proto file to be at (Beware of the path again. I have changed the directories couple of times).
 - `/Users/ashok/Documents/Else/Projects_leer/UdemyDistributedSystemsAndCloudComputing/distributedSystemsAndCloudComputingInJava/protoc-29.3-osx-x86_64/bin/protoc --java_out=./src/main/java/ ./src/main/java/model/proto/search_cluster_protos.proto`
 - Also, make sure to update the pom.xml with protobuf-java latest stable version
+
+## Infra as Code deployment in GCP
+
+### Cloud deployment in practice
+Manually run an application on a compute enginer instance and instance templates for automating that vm creation for most of the part
+- generate a jar file locally.
+- Upload this jar file in gcp storage application bucket.
+- Either generate an instance template or a new VM instance manually everytime.
+- Commands in shell for up and running
+	- `which java` initially it's not installed
+	- `sudo apt-get update`
+	- `sudo apt-get -y --force-yes install openjdk-11-jdk`
+	- copy the jar file from storage application bucket to the current VM 
+		- `gsutil cp gs://application-bucket/*.jar .`
+	- Launch our application listening on a port (ex: 80)
+		- `sudo java -jar <jar name> 80 &`
+- When creating an instance template, we don't need to specify the region because we can have our compute engines anywhere we want when we create VM button from the Instance template options.
+
+### Instance groups, autoscaling, auto-healing
+- Launch an entire cluster distributed across multiple zones
+- Autoscaling policies to allow our cluster to grow and shrink depending on the load.
+- Autohealing health checks for automatic recovery from failures and keeps our system stable and available to our users at all times.
+##### Instance groups and autoscaling
+- Manage groups of computer instances that can scale up and down if they become unhealthy or completely automatic.
+- Even though we have Instance templates, 
+	- creation of each VM was still manual
+	- No way to create a number of instances at once
+	- Each VM is independent and unmonitored
+	- We have to manually restart VMs upon failure.
+- To solve above problems, we can create instance groups.
+	- We can manage a large cluster of compute instances
+	- Monitor all compute instances' health
+	- Add more instance during peak traffic
+	- Heal the cluster if there are any failures
+
+##### Auto-healing
+- In the Instance groups, edit it and there will be an option for health check.
+- In side the health check, we need to give an end point like a `/status` endpoint from our application jar which it sends requests periodically to a Check Interval time we set in this Health Check.
+	- Need to set Check Interval, timeout, Healthy threshld (consecutive successes), un healthy threshold (no. of consecutive failures)
+- Test this
+	- Get the shell of one of the instances
+	- `ps axu | grep java`
+	- `sudo kill -9 <pid>`
+	- Now the application on this instance no longer runs.
+	- After the healthchecks, autohealer understands that this application is not running and because `/status` can't be reached. So it shuts down this VM instance and starts a new VM (now this would have a new ip address). Check it in monitoring window also. 
+
