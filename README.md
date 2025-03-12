@@ -104,3 +104,16 @@ Manually run an application on a compute enginer instance and instance templates
 	- Now the application on this instance no longer runs.
 	- After the healthchecks, autohealer understands that this application is not running and because `/status` can't be reached. So it shuts down this VM instance and starts a new VM (now this would have a new ip address). Check it in monitoring window also. 
 
+### Load Balancing
+- Just like above, from the instance group section on the left navigation bar, create a new instance group in a different continent. If the previous instance is in US-north, create the new one in EU-north. Also enable the load balancing for this instance group. 
+- Both instances will have different end points, we want our user to have only one end point and we abstract all these details and give user only one endpoint (static ip address).
+- Create a new static ip address in VPC network tab on the left navigation bar.
+- Create a load balancer from Load Balancing tab on the left.
+	- Here, need to create a backend service in which we can choose if load balancing can be done based on the no. of requests or the cpu utilization.
+	- We can add multiple backends (ex: us-north, eu-north) 
+	- Health checks option can also be enabled. When this is enableed, a periodic health checks will the sent to the backend regions. If a region is determined to be unhealthy, it will simply to removed from the configuration until it is healthy again.
+- Load Balancer capabilities:
+	- High availability
+	- Balancing mode based on CPU/Rate
+	- Healthchecks
+
